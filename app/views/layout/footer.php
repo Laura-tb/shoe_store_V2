@@ -16,3 +16,5 @@
         </div>
     </div>
 </footer>
+
+<div id="cart-drawer-overlay" class="cart-drawer-overlay hidden"></div>

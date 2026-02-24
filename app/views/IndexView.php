@@ -1,4 +1,3 @@
-<!-- VISTA HOME -->
 <!DOCTYPE html>
 <html lang="es">
 
