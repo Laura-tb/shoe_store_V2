@@ -4,12 +4,18 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,12 +30,13 @@ public class User {
     @Column(nullable = false)
     private String surname;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) //No devuelve password en respuestas JSON, pero sí permite recibirlo en solicitudes
+    // No devuelve password en respuestas JSON, pero sí permite recibirlo en solicitudes
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) 
     @Column(name = "pass_hash", nullable = false)
     private String password;
 
     @Column(nullable = false)
-    private String role;
+    private String role; // ROLE_ADMIN o ROLE_CLIENT
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -70,7 +77,7 @@ public class User {
         this.surname = surname;
     }
 
-    /*@JsonIgnore*/
+    @Override
     public String getPassword() {
         return password;
     }
@@ -93,5 +100,42 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    //Clase User implementa UserDetails para integrarse con Spring Security
+    @JsonIgnore
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role));
+    }
+
+    @JsonIgnore
+    @Override
+    public String getUsername() {
+        return this.email; // o username si usas username
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

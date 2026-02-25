@@ -4,6 +4,17 @@ import com.shoestore.shoestore.entity.User;
 import com.shoestore.shoestore.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+
+//DTOs
+import com.shoestore.shoestore.dto.RegisterRequestDto;
+import com.shoestore.shoestore.dto.LoginRequestDto;
+import com.shoestore.shoestore.dto.AuthResponseDto;
+
+//Validaciones
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -15,30 +26,43 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public Object login(@RequestParam String email,
-            @RequestParam String password) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto dto) {
 
-        User user = userService.login(email, password);
+        User user = userService.login(dto.getEmail(), dto.getPassword());
 
         if (user == null) {
-            return "Invalid credentials";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
 
-        return user;
+        AuthResponseDto response = new AuthResponseDto(
+                user.getId(),
+                user.getEmail(),
+                user.getName(),
+                user.getSurname(),
+                user.getRole(),
+                user.getCreatedAt());
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
-    public Object register(@RequestBody User user) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDto dto) {
 
-        
-
-        User createdUser = userService.register(user);
-        System.out.println("PASSWORD RECIBIDA: " + user.getPassword());
+        User createdUser = userService.registerFromDto(dto);
 
         if (createdUser == null) {
-            return "Email already exists";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email already exists");
         }
 
-        return createdUser;
+        AuthResponseDto response = new AuthResponseDto(
+                createdUser.getId(),
+                createdUser.getEmail(),
+                createdUser.getName(),
+                createdUser.getSurname(),
+                createdUser.getRole(),
+                createdUser.getCreatedAt());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
 }
