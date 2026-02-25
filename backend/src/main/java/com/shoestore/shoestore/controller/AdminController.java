@@ -1,9 +1,10 @@
 package com.shoestore.shoestore.controller;
 
-import com.shoestore.shoestore.entity.Product;
-import com.shoestore.shoestore.entity.User;
 import com.shoestore.shoestore.service.ProductService;
 import com.shoestore.shoestore.service.UserService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public class AdminController {
 
     @PostMapping("/products")
     public ResponseEntity<ProductResponseDto> createProduct(
-            @RequestBody ProductRequestDto dto) {
+        @Valid @RequestBody ProductRequestDto dto) {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -45,8 +46,8 @@ public class AdminController {
 
     @PutMapping("/products/{id}")
     public ResponseEntity<ProductResponseDto> updateProduct(
-            @PathVariable Integer id,
-            @RequestBody ProductRequestDto dto) {
+        @PathVariable Integer id,
+        @Valid @RequestBody ProductRequestDto dto) {
 
         return ResponseEntity.ok(productService.update(id, dto));
     }

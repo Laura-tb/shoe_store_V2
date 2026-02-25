@@ -12,6 +12,9 @@ import com.shoestore.shoestore.dto.RegisterRequestDto;
 import com.shoestore.shoestore.dto.LoginRequestDto;
 import com.shoestore.shoestore.dto.AuthResponseDto;
 
+//Validaciones
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -23,7 +26,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDto dto) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto dto) {
 
         User user = userService.login(dto.getEmail(), dto.getPassword());
 
@@ -43,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequestDto dto) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDto dto) {
 
         User createdUser = userService.registerFromDto(dto);
 
